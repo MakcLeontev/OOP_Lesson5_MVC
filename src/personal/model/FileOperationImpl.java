@@ -1,6 +1,8 @@
 package personal.model;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +12,7 @@ public class FileOperationImpl implements FileOperation {
 
     public FileOperationImpl(String fileName) {
         this.fileName = fileName;
-        try (FileWriter writer = new FileWriter(fileName, false)) {
+        try (FileWriter writer = new FileWriter(fileName, true)) {
             writer.flush();
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
@@ -25,19 +27,25 @@ public class FileOperationImpl implements FileOperation {
             FileReader fr = new FileReader(file);
             //создаем BufferedReader с существующего FileReader для построчного считывания
             BufferedReader reader = new BufferedReader(fr);
-            // считаем сначала первую строку
-            String line = reader.readLine();
-            if (line != null) {
-                lines.add(line);
-            }
-            while (line != null) {
-                // считываем остальные строки в цикле
-                line = reader.readLine();
-                if (line != null) {
+            List<String>allLines = Files.readAllLines(Path.of(fileName));
+            for (String line:allLines) {
+                if(line.length()!=0){
                     lines.add(line);
                 }
             }
-            fr.close();
+            // считаем сначала первую строку
+//            String line = reader.readLine();
+//            if (line != null) {
+//                lines.add(line);
+//            }
+//            while (line != null) {
+//                // считываем остальные строки в цикле
+//                line = reader.readLine();
+//                if (line != null) {
+//                    lines.add(line);
+//                }
+//            }
+//            fr.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -52,6 +60,7 @@ public class FileOperationImpl implements FileOperation {
                 // запись всей строки
                 writer.write(line);
                 // запись по символам
+                writer.append('\n');
                 writer.append('\n');
             }
             writer.flush();
